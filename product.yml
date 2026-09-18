@@ -1,0 +1,14 @@
+name: 'Twext Admin'
+command: 'twext-admin'
+version: '0.1.0'
+tagline: 'A Node.js CLI for administrators who want to remotely control and moderate a TwextHub instance'
+author: 'Twext Team'
+homepage: 'https://github.com/twext/admin'
+symbols:
+  success: '✓'
+  error: '✗'
+  progress: '~'
+  bullet: '•'
+defaults:
+  apiBase: 'https://twexts.sdisk.us/api/v0'
+  tokenFile: '.twext-admin-token'
