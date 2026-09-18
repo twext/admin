@@ -73,6 +73,10 @@ async function deleteExtension(product, log, args) {
 
 export async function searchCommand(product, log, args, values) {
   const query = args[0] ?? values.query;
+  if (!query) {
+    console.log(searchHelp(product));
+    return 1;
+  }
   const data = await apiRequest(product, 'GET', '/search', {
     query: { query, cursor: values.cursor, limit: values.limit },
   });

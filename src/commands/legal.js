@@ -1,6 +1,10 @@
 import { apiRequest } from '../api.js';
 
 export async function termsCommand(product, log, sub) {
+  if (sub && sub !== 'update') {
+    console.log(legalHelp(product));
+    return 1;
+  }
   if (sub === 'update') {
     log.error('Usage: twext-admin terms update (reads Markdown from stdin)');
     log.raw('');
@@ -22,6 +26,10 @@ export async function termsCommand(product, log, sub) {
 }
 
 export async function privacyCommand(product, log, sub) {
+  if (sub && sub !== 'update') {
+    console.log(legalHelp(product));
+    return 1;
+  }
   if (sub === 'update') {
     log.error('Usage: twext-admin privacy update (reads Markdown from stdin)');
     log.raw('');
@@ -40,6 +48,14 @@ export async function privacyCommand(product, log, sub) {
   log.raw('');
   log.raw(doc.body);
   return 0;
+}
+
+function legalHelp(product) {
+  return `Usage: ${product.command} <terms|privacy> [update]
+
+Subcommands:
+  (no subcommand)   View the current document
+  update            Update the document (reads Markdown from stdin)`;
 }
 
 function readStdin() {

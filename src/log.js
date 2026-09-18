@@ -9,5 +9,10 @@ export function createLogger(product) {
     bullet: (message) => console.log(`  ${product.symbols.bullet} ${message}`),
     info: (message) => console.log(message),
     raw: (message) => console.log(message),
+    secret: (message) => {
+      if (!process.stdout.isTTY) return false;
+      process.stdout.write(`${message}\n`);
+      return true;
+    },
   };
 }

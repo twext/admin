@@ -14,7 +14,6 @@ const OPTIONS = {
   cursor: { type: 'string' },
   role: { type: 'string' },
   'display-name': { type: 'string' },
-  password: { type: 'string' },
   query: { type: 'string' },
   reason: { type: 'string' },
   scopes: { type: 'string' },
@@ -28,7 +27,19 @@ async function main(args) {
   const log = createLogger(product);
   const { values, positionals } = parseArgs({ args, options: OPTIONS, allowPositionals: true });
 
-  if (values.url) product.defaults.apiBase = values.url;
+  if (values.url) {
+    let url;
+    try {
+      url = new URL(values.url);
+    } catch {
+      url = null;
+    }
+    if (!url || url.protocol !== 'https:') {
+      log.error(`Invalid --url "${values.url}": must use the https: protocol`);
+      return 1;
+    }
+    product.defaults.apiBase = values.url;
+  }
   if (values.version) {
     console.log(`${product.name} ${product.version}`);
     return 0;

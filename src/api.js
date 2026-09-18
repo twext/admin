@@ -1,8 +1,17 @@
-import { readFileSync, writeFileSync, existsSync, unlinkSync } from 'node:fs';
-import { join } from 'node:path';
+import { readFileSync, writeFileSync, existsSync, unlinkSync, chmodSync, mkdirSync } from 'node:fs';
+import { homedir } from 'node:os';
+import { dirname, join } from 'node:path';
+
+function configDir() {
+  if (process.env.XDG_CONFIG_HOME) return process.env.XDG_CONFIG_HOME;
+  if (process.platform === 'win32')
+    return process.env.APPDATA || join(homedir(), 'AppData', 'Roaming');
+  if (process.platform === 'darwin') return join(homedir(), 'Library', 'Application Support');
+  return join(homedir(), '.config');
+}
 
 function tokenPath() {
-  return join(process.cwd(), '.twext-admin-token');
+  return join(configDir(), '.twext-admin-token');
 }
 
 export function loadToken() {
@@ -12,7 +21,10 @@ export function loadToken() {
 }
 
 export function saveToken(token) {
-  writeFileSync(tokenPath(), token + '\n', 'utf8');
+  const p = tokenPath();
+  mkdirSync(dirname(p), { recursive: true });
+  writeFileSync(p, token + '\n', 'utf8');
+  chmodSync(p, 0o600);
 }
 
 export function clearToken() {
@@ -30,7 +42,7 @@ export async function apiRequest(product, method, path, { token, body, query } =
   }
 
   const headers = { 'Content-Type': 'application/json' };
-  const activeToken = token ?? loadToken();
+  const activeToken = token !== undefined ? token : loadToken();
   if (activeToken) headers['Authorization'] = `Bearer ${activeToken}`;
 
   const opts = { method, headers };

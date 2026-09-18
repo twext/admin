@@ -25,7 +25,7 @@
 
 ## Overview
 
-Twext Admin talks to the TwextHub API. Sessions are stored as a bearer token in `.twext-admin-token` in the directory where you run it; most operations require a session on an admin account, and the API rejects automation tokens for admin work.
+Twext Admin talks to the TwextHub API. Sessions are stored as a bearer token in `.twext-admin-token` under your user configuration directory (`~/.config` on Linux, `~/Library/Application Support` on macOS, `%APPDATA%` on Windows), so logging in works from anywhere; most operations require a session on an admin account, and the API rejects automation tokens for admin work.
 
 ## Installation
 
@@ -50,10 +50,10 @@ Run `twext-admin` with no arguments to open an interactive menu that walks throu
 First log in with an admin account:
 
 ```bash
-twext-admin auth login <namespace> <password>
+twext-admin auth login <namespace>
 ```
 
-The 7-day session token is saved to `.twext-admin-token`; subsequent commands reuse it until it expires or you log out (`twext-admin auth logout`).
+It prompts for the password with the terminal echo turned off (or reads a line of standard input when piped). The 7-day session token is saved to `.twext-admin-token` in your user configuration directory; subsequent commands reuse it until it expires or you log out (`twext-admin auth logout`).
 
 Moderating the review queue:
 

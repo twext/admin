@@ -54,11 +54,21 @@ async function createToken(product, log, args, values) {
     return 1;
   }
   const body = { name, scopes };
-  if (values['expires-in-days']) body.expiresInDays = Number(values['expires-in-days']);
+  if (values['expires-in-days']) {
+    const days = Number(values['expires-in-days']);
+    if (!Number.isFinite(days) || days <= 0) {
+      log.error('Invalid --expires-in-days value; provide a positive number of days');
+      return 1;
+    }
+    body.expiresInDays = days;
+  }
   const data = await apiRequest(product, 'POST', '/tokens', { body });
   log.success(`Created token "${data.name}" (${data.id})`);
   log.warn(`Save this token now — it won't be shown again:`);
-  log.raw(data.token);
+  if (!log.secret(data.token)) {
+    log.error('Cannot display the token: stdout is not an interactive terminal');
+    return 1;
+  }
   return 0;
 }
 

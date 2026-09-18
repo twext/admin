@@ -50,7 +50,7 @@ export async function dispatch(product, log, positionals, values) {
         console.log(helpText(product));
         return 0;
       case 'auth':
-        return authDispatch(product, log, positionals[1], positionals.slice(2));
+        return authDispatch(product, log, positionals[1], positionals.slice(2), values);
       case 'users':
         return usersCommand(product, log, positionals[1], positionals.slice(2), values);
       case 'extensions':
@@ -97,15 +97,15 @@ function authHelp(product) {
   return `Usage: ${product.command} auth <subcommand>
 
 Subcommands:
-  login <namespace> <password>   Log in and save the session token
-  logout                         Revoke the current session and clear the saved token
-  me                             Show the currently authenticated account`;
+  login <namespace>             Log in (password is read from a prompt) and save the session token
+  logout                        Revoke the current session and clear the saved token
+  me                            Show the currently authenticated account`;
 }
 
-function authDispatch(product, log, sub, rest) {
+function authDispatch(product, log, sub, rest, values) {
   switch (sub) {
     case 'login':
-      return loginCommand(product, log, rest);
+      return loginCommand(product, log, rest, values);
     case 'logout':
       return logoutCommand(product, log);
     case 'me':

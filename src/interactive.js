@@ -10,7 +10,7 @@ const GROUPS = [
         key: 'login',
         title: 'Log in',
         cmd: ['auth', 'login'],
-        args: [{ prompt: 'Namespace' }, { prompt: 'Password' }],
+        args: [{ prompt: 'Namespace' }, { key: 'password', prompt: 'Password', secret: true }],
       },
       { key: 'logout', title: 'Log out', cmd: ['auth', 'logout'] },
       { key: 'me', title: 'Who am I', cmd: ['auth', 'me'] },
@@ -35,7 +35,7 @@ const GROUPS = [
         flags: {
           role: 'Role (admin/normal)',
           'display-name': 'Display name',
-          password: 'New password',
+          password: { desc: 'New password', secret: true },
         },
       },
       {
@@ -221,6 +221,23 @@ async function ask(rl, prompt) {
   }
 }
 
+async function askSecret(rl, prompt) {
+  process.stdout.write(prompt);
+  const out = process.stdout;
+  const orig = out.write.bind(out);
+  out.write = (chunk) => {
+    if (/\n/.test(String(chunk))) return orig(chunk);
+    return true;
+  };
+  try {
+    return await rl.question('');
+  } catch {
+    return null;
+  } finally {
+    out.write = orig;
+  }
+}
+
 function resolveSelection(list, input) {
   const n = Number(input);
   if (input && Number.isInteger(n) && n >= 1 && n <= list.length) return list[n - 1];
@@ -256,18 +273,24 @@ async function pickItem(rl, log, group) {
 
 async function buildArgs(rl, item) {
   const positionals = [...item.cmd];
+  const values = {};
   for (const arg of item.args ?? []) {
     const suffix = arg.default ? ` [${arg.default}]` : '';
-    const answer = await ask(rl, `${arg.prompt}${suffix}: `);
-    if (answer === null) return undefined;
+    const prompt = `${arg.prompt}${suffix}: `;
+    const answer = arg.secret ? await askSecret(rl, prompt) : await ask(rl, prompt);
+    if (answer === null || answer === undefined) return undefined;
     const value = answer.trim() || arg.default || '';
     if (!value) return null;
-    positionals.push(value);
+    if (arg.key) values[arg.key] = value;
+    else positionals.push(value);
   }
-  const values = {};
-  for (const [name, desc] of Object.entries(item.flags ?? {})) {
-    const answer = await ask(rl, `${desc} (--${name}): `);
-    if (answer === null) return undefined;
+  for (const [name, def] of Object.entries(item.flags ?? {})) {
+    const desc = typeof def === 'string' ? def : def.desc;
+    const secret = typeof def === 'object' && def.secret;
+    const answer = secret
+      ? await askSecret(rl, `${desc} (--${name}): `)
+      : await ask(rl, `${desc} (--${name}): `);
+    if (answer === null || answer === undefined) return undefined;
     const value = answer.trim();
     if (value) values[name] = value;
   }

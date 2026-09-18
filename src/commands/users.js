@@ -66,7 +66,7 @@ async function updateUser(product, log, args, values) {
   if (values['display-name']) body.displayName = values['display-name'];
   if (values.password) body.password = values.password;
   if (!Object.keys(body).length) {
-    log.error('No fields to update. Use --role, --display-name, or --password.');
+    log.error('No fields to update. Use --role or --display-name.');
     return 1;
   }
   const user = await apiRequest(product, 'PATCH', `/users/${args[0]}`, { body });
@@ -96,7 +96,6 @@ Subcommands:
 Options:
   --role <role>            Set the role (admin or normal)
   --display-name <name>    Set the display name
-  --password <password>    Change the password
   --cursor <cursor>        Pagination cursor (list)
   --limit <n>              Results per page (list)`;
 }

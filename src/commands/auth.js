@@ -1,11 +1,13 @@
 import { apiRequest, saveToken, clearToken } from '../api.js';
+import { readSecret } from '../secret.js';
 
-export async function loginCommand(product, log, args) {
-  if (args.length < 2) {
-    log.error('Usage: twext-admin auth login <namespace> <password>');
+export async function loginCommand(product, log, args, values) {
+  if (args.length !== 1) {
+    log.error('Usage: twext-admin auth login <namespace> (password is read from a prompt)');
     return 1;
   }
-  const [namespace, password] = args;
+  const [namespace] = args;
+  const password = values.password ?? (await readSecret('Password'));
   log.progress(`Logging in as ${namespace}...`);
   const data = await apiRequest(product, 'POST', '/auth/login', {
     token: null,

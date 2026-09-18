@@ -1,5 +1,13 @@
 import { apiRequest } from '../api.js';
 
+function parsePackageTarget(ref) {
+  if (typeof ref !== 'string' || !ref.startsWith('@')) return null;
+  const rest = ref.slice(1);
+  const slash = rest.indexOf('/');
+  if (slash <= 0 || slash === rest.length - 1) return null;
+  return { namespace: rest.slice(0, slash), id: rest.slice(slash + 1) };
+}
+
 export async function queueCommand(product, log, values) {
   const data = await apiRequest(product, 'GET', '/versions', {
     query: { status: 'pending', cursor: values.cursor, limit: values.limit },
@@ -20,7 +28,7 @@ export async function queueCommand(product, log, values) {
 }
 
 export async function approveCommand(product, log, args, values) {
-  if (!args[0] || !args[0].startsWith('@')) {
+  if (!parsePackageTarget(args[0])) {
     log.error('Usage: twext-admin approve @namespace/id version');
     return 1;
   }
@@ -38,7 +46,7 @@ export async function approveCommand(product, log, args, values) {
 }
 
 export async function rejectCommand(product, log, args, values) {
-  if (!args[0] || !args[0].startsWith('@')) {
+  if (!parsePackageTarget(args[0])) {
     log.error('Usage: twext-admin reject @namespace/id version [--reason "..."]');
     return 1;
   }
