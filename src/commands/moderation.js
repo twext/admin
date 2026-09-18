@@ -46,7 +46,7 @@ export async function approveCommand(product, log, args, values) {
   const result = await apiRequest(
     product,
     'PATCH',
-    `/${encodeTarget(target)}/versions/${version}`,
+    `/${encodeTarget(target)}/versions/${encodeURIComponent(version)}`,
     {
       body: { status: 'approved' },
     },
@@ -75,7 +75,7 @@ export async function rejectCommand(product, log, args, values) {
   const result = await apiRequest(
     product,
     'PATCH',
-    `/${encodeTarget(target)}/versions/${version}`,
+    `/${encodeTarget(target)}/versions/${encodeURIComponent(version)}`,
     {
       body: { status: 'rejected', reason },
     },

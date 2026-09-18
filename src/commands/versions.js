@@ -5,7 +5,12 @@ export async function versionsCommand(product, log, args) {
     log.error('Usage: twext-admin versions @namespace/id [options]');
     return 1;
   }
-  const data = await apiRequest(product, 'GET', `/${args[0]}/versions/${args[1] ?? 'latest'}`);
+  const version = args[1] ?? 'latest';
+  const data = await apiRequest(
+    product,
+    'GET',
+    `/${args[0]}/versions/${encodeURIComponent(version)}`,
+  );
   log.raw(`Namespace:  ${data.namespace}`);
   log.raw(`ID:         ${data.id}`);
   log.raw(`Version:    ${data.version}`);
@@ -29,7 +34,7 @@ export async function yankCommand(product, log, args) {
     log.error('Provide a version: twext-admin yank @namespace/id 1.0.0');
     return 1;
   }
-  await apiRequest(product, 'DELETE', `/${args[0]}/versions/${version}`);
+  await apiRequest(product, 'DELETE', `/${args[0]}/versions/${encodeURIComponent(version)}`);
   log.success(`Yanked @${args[0].slice(1)} v${version}`);
   return 0;
 }
@@ -41,7 +46,7 @@ export async function downloadCommand(product, log, args, values) {
   }
   const version = args[1] ?? 'latest';
   const base = product.defaults.apiBase.replace(/\/+$/, '');
-  const url = `${base}/${args[0]}/versions/${version}/download`;
+  const url = `${base}/${args[0]}/versions/${encodeURIComponent(version)}/download`;
   log.progress(`Downloading ${args[0]} v${version}...`);
   const res = await fetch(url);
   if (!res.ok) {
