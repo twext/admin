@@ -1,6 +1,6 @@
 import { apiRequest } from '../api.js';
 
-function parsePackageTarget(ref) {
+export function parsePackageTarget(ref) {
   if (typeof ref !== 'string' || !ref.startsWith('@')) return null;
   const rest = ref.slice(1);
   const slash = rest.indexOf('/');
@@ -8,7 +8,7 @@ function parsePackageTarget(ref) {
   return { namespace: rest.slice(0, slash), id: rest.slice(slash + 1) };
 }
 
-function encodeTarget(target) {
+export function encodeTarget(target) {
   return `@${encodeURIComponent(target.namespace)}/${encodeURIComponent(target.id)}`;
 }
 
