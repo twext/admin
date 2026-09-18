@@ -35,7 +35,7 @@ async function main(args) {
       url = null;
     }
     if (!url || url.protocol !== 'https:') {
-      log.error(`Invalid --url "${values.url}": must use the https: protocol`);
+      log.error('Invalid --url: must use the https: protocol');
       return 1;
     }
     product.defaults.apiBase = values.url;

@@ -62,13 +62,14 @@ async function createToken(product, log, args, values) {
     }
     body.expiresInDays = days;
   }
-  const data = await apiRequest(product, 'POST', '/tokens', { body });
-  log.success(`Created token "${data.name}" (${data.id})`);
-  log.warn(`Save this token now — it won't be shown again:`);
-  if (!log.secret(data.token)) {
+  if (!process.stdout.isTTY) {
     log.error('Cannot display the token: stdout is not an interactive terminal');
     return 1;
   }
+  const data = await apiRequest(product, 'POST', '/tokens', { body });
+  log.success(`Created token "${data.name}" (${data.id})`);
+  log.warn(`Save this token now — it won't be shown again:`);
+  log.secret(data.token);
   return 0;
 }
 

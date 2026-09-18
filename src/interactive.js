@@ -185,7 +185,7 @@ const GROUPS = [
 ];
 
 export async function interactiveShell(product, log) {
-  const rl = createInterface({ input: process.stdin, output: process.stdout });
+  const rl = createInterface({ input: process.stdin, output: process.stdout, historySize: 0 });
   try {
     log.info(`${product.name} ${product.version} — interactive mode`);
     log.info(`Pick a section, then an action. 'q' quits, 'b' goes back.`);
