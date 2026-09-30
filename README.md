@@ -1,3 +1,7 @@
+> [!WARNING]
+>
+> **Deprecated:** Twext Admin has been deprecated. Please use the [web UI](https://twexts.sdisk.us) instead.
+
 # Twext Admin
 
 > An admin CLI for managing a TwextHub instance — accounts, extensions, moderation, tokens, sessions, and legal documents
